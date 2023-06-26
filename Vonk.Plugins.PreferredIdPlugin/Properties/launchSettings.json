@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Vonk.Plugins.PreferredIdPlugin": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\paull\\source\\repos\\Tests\\Vonk.Plugins.PreferredIdPlugin\\VonkServer\\Server\\Firely.Server.exe",
+      "workingDirectory": "C:\\Users\\paull\\source\\repos\\Tests\\Vonk.Plugins.PreferredIdPlugin\\VonkServer"
+    }
+  }
+}

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vonk.Plugins.PreferredIdPlugin", "Vonk.Plugins.PreferredIdPlugin\Vonk.Plugins.PreferredIdPlugin.csproj", "{0943429E-BFD8-4EB9-A25F-7BAE57B6E2EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vonk.Plugins.PreferredIdPlugin", "Vonk.Plugins.PreferredIdPlugin\Vonk.Plugins.PreferredIdPlugin.csproj", "{0943429E-BFD8-4EB9-A25F-7BAE57B6E2EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vonk.Plugins.PreferredIdPlugin.Unit", "Vonk.Plugins.PreferredIdPlugin.Unit\Vonk.Plugins.PreferredIdPlugin.Unit.csproj", "{656EDF72-3A99-4417-9795-810185EEF65E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{0943429E-BFD8-4EB9-A25F-7BAE57B6E2EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0943429E-BFD8-4EB9-A25F-7BAE57B6E2EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0943429E-BFD8-4EB9-A25F-7BAE57B6E2EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{656EDF72-3A99-4417-9795-810185EEF65E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{656EDF72-3A99-4417-9795-810185EEF65E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{656EDF72-3A99-4417-9795-810185EEF65E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{656EDF72-3A99-4417-9795-810185EEF65E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

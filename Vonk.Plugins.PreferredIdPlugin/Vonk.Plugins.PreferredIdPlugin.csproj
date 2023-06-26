@@ -1,8 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6</TargetFramework>
+		<Nullable>enable</Nullable>
+		<BaseOutputPath>C:\Users\paull\source\repos\Tests\Vonk.Plugins.PreferredIdPlugin\VonkServer\Server\plugins\vonk.plugins.preferredidplugin</BaseOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="bin\**" />
+	  <EmbeddedResource Remove="bin\**" />
+	  <None Remove="bin\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Vonk.Core" Version="5.1.0" />
+		<PackageReference Include="Vonk.Fhir.R4" Version="5.1.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Properties\" />
+	</ItemGroup>
 
 </Project>
