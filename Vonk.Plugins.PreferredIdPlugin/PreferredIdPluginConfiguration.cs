@@ -6,6 +6,7 @@ using Vonk.Core.Common;
 using Vonk.Core.Metadata;
 using Vonk.Core.Pluggability;
 using Vonk.Core.Pluggability.ContextAware;
+using Vonk.Plugins.PreferredIdPlugin.Repositories;
 
 namespace Vonk.Plugins.PreferredIdPlugin;
 
@@ -15,6 +16,7 @@ public static class PreferredIdPluginConfiguration
 	public static IServiceCollection AddPreferredIdPlugin(this IServiceCollection services)
 	{
 		services.TryAddTransient<PreferredIdPluginRequestValidator>();
+		services.TryAddTransient(typeof(AdminDomainResourceSearchRepository<>));
 		services.TryAddSingleton<PreferredIdPlugin>();
 		services.TryAddContextAware<ICapabilityStatementContributor, PreferredIdPluginCapabilityStatementContributor>(ServiceLifetime.Transient);
 		return services;

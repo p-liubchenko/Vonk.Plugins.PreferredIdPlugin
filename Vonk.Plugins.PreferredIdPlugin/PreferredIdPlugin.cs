@@ -11,9 +11,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Vonk.Core.Context;
-using Vonk.Core.Repository;
+using Vonk.Fhir.R4;
 using Vonk.Plugins.PreferredIdPlugin.Exceptions;
-using Vonk.Plugins.PreferredIdPlugin.Extensions;
+using Vonk.Plugins.PreferredIdPlugin.Repositories;
 
 using static Hl7.Fhir.Model.NamingSystem;
 
@@ -21,12 +21,12 @@ namespace Vonk.Plugins.PreferredIdPlugin;
 
 public class PreferredIdPlugin
 {
-	private readonly IAdministrationSearchRepository _administrationSearchRepository;
+	private readonly AdminDomainResourceSearchRepository<NamingSystem> _namingSystemRepository;
 	private readonly ILogger<PreferredIdPlugin> _logger;
 
-	public PreferredIdPlugin(IAdministrationSearchRepository administrationSearchRepository, ILogger<PreferredIdPlugin> logger)
+	public PreferredIdPlugin(AdminDomainResourceSearchRepository<NamingSystem> namingSystemRepository, ILogger<PreferredIdPlugin> logger)
 	{
-		_administrationSearchRepository = administrationSearchRepository;
+		_namingSystemRepository = namingSystemRepository;
 		_logger = logger;
 	}
 
@@ -39,15 +39,17 @@ public class PreferredIdPlugin
 	{
 		_logger.LogDebug("preferred-id get started");
 
-		UniqueIdComponent uid;
-
 		try
 		{
-			uid = await FindUidOfType(context.ServerBase, ResolveParameters(context));
+			UniqueIdComponent uid = await FindUidOfType(context.ServerBase, ResolveParameters(context));
 
 			context.Arguments.Handled();
 
-			context.Response.Payload = uid.ToParameters();
+			context.Response.Payload = new Parameters()
+			{
+				{ "result", new FhirString(uid.Value) }
+			}.ToIResource();
+
 			context.Response.HttpResult = StatusCodes.Status200OK;
 		}
 		catch (NamingSystemException ex)
@@ -74,12 +76,14 @@ public class PreferredIdPlugin
 	/// <exception cref="NamingSystemException"></exception>
 	private async Task<UniqueIdComponent> FindUidOfType(Uri serverUrl, (string id, string type) param)
 	{
-		var namingSystem = await _administrationSearchRepository.FindNamingSystemByUniqueId(param.id, serverUrl);
+		var namingSystem = (await _namingSystemRepository
+			.Get(serverUrl, x => x.UniqueId.Any(uid => uid.Value == param.id)))
+				.SingleOrDefault()
+			?? throw new NamingSystemException("NamingSystem with requested uniqueId was not found");
 
-		var result = namingSystem.UniqueId.FirstOrDefault(u => u.Type.HasValue && u.Type.ToString().ToLower() == param.type.ToLower());
-
-		if (result is null)
-			throw new NamingSystemException($"UniqueId of requiered type was not fount in {param.id}");
+		var result = namingSystem?.UniqueId
+			.FirstOrDefault(u => u.Type.HasValue && u.Type.ToString().ToLower() == param.type.ToLower())
+			?? throw new NamingSystemException($"UniqueId of requiered type was not fount in {param.id}");
 
 		return result;
 	}
@@ -93,17 +97,15 @@ public class PreferredIdPlugin
 	public static (string id, string type) ResolveParameters(IVonkContext context)
 	{
 		if (context.Request.Method == HttpMethods.Get)
-		{
 			return new()
 			{
 				id = context.Arguments.GetArgument("id").ArgumentValue,
 				type = context.Arguments.GetArgument("type").ArgumentValue
 			};
-		}
 
 		if (context.Request.Method == HttpMethods.Post)
 		{
-			var body = context.Request.Payload.Resource.ToPoco<Parameters>();
+			var body = context.Request.Payload.Resource.ToPoco<Parameters>() ?? throw new InvalidOperationException("Body parameters are not defined");
 
 			return new()
 			{
