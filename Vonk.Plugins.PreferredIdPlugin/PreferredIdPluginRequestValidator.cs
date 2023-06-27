@@ -40,7 +40,7 @@ public class PreferredIdPluginRequestValidator
 		{
 			context.Response.Outcome.AddIssue(VonkOutcome.IssueSeverity.Error, VonkOutcome.IssueType.Value, "", "Type parameter not found");
 			context.Response.HttpResult = StatusCodes.Status400BadRequest;
-			//validate value is in possible values
+			// TODO: validate value is in possible values. [paull, 27.06.2023]
 		}
 	}
 }

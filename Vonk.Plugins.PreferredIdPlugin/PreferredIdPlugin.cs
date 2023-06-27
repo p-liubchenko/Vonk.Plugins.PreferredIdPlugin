@@ -65,6 +65,13 @@ public class PreferredIdPlugin
 		_logger.LogDebug("preferred-id get ended");
 	}
 
+	/// <summary>
+	/// Searches for namingSystem and UniqueId which correspond to requested type
+	/// </summary>
+	/// <param name="serverUrl"></param>
+	/// <param name="param"></param>
+	/// <returns></returns>
+	/// <exception cref="NamingSystemException"></exception>
 	private async Task<UniqueIdComponent> FindUidOfType(Uri serverUrl, (string id, string type) param)
 	{
 		var namingSystem = await _administrationSearchRepository.FindNamingSystemByUniqueId(param.id, serverUrl);
@@ -77,6 +84,12 @@ public class PreferredIdPlugin
 		return result;
 	}
 
+	/// <summary>
+	/// Resolves request parameters depending on http method
+	/// </summary>
+	/// <param name="context"></param>
+	/// <returns></returns>
+	/// <exception cref="InvalidOperationException"></exception>
 	public static (string id, string type) ResolveParameters(IVonkContext context)
 	{
 		if (context.Request.Method == HttpMethods.Get)
