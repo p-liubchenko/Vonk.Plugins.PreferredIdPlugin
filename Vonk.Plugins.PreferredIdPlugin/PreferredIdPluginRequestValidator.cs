@@ -32,7 +32,7 @@ public class PreferredIdPluginRequestValidator
 
 		if (!body.Parameter.HasAny(x => x.Name == "id"))
 		{
-			context.Response.Outcome.AddIssue(VonkOutcome.IssueSeverity.Error, VonkOutcome.IssueType.Value, "", "Id parameter is requiered");
+			context.Response.Outcome.AddIssue(VonkOutcome.IssueSeverity.Error, VonkOutcome.IssueType.Value, "", "Id parameter is required");
 			context.Response.HttpResult = StatusCodes.Status400BadRequest;
 		}
 

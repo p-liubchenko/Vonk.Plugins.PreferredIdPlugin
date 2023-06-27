@@ -83,7 +83,7 @@ public class PreferredIdPlugin
 
 		var result = namingSystem?.UniqueId
 			.FirstOrDefault(u => u.Type.HasValue && u.Type.ToString().ToLower() == param.type.ToLower())
-			?? throw new NamingSystemException($"UniqueId of requiered type was not fount in {param.id}");
+			?? throw new NamingSystemException($"UniqueId of required type was not fount in {param.id}");
 
 		return result;
 	}
