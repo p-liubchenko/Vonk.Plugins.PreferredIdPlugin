@@ -1,1 +1,1 @@
-# Vonk.Plugins.PreferredIdPlugin
+# Vonk.Plugins.PreferredIdPlugin [![.NET](https://github.com/p-liubchenko/Vonk.Plugins.PreferredIdPlugin/actions/workflows/dotnet.yml/badge.svg?branch=master)](https://github.com/p-liubchenko/Vonk.Plugins.PreferredIdPlugin/actions/workflows/dotnet.yml)
