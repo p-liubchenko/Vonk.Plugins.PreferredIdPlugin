@@ -49,6 +49,7 @@ internal class PreferredIdPlugin
 		catch (NamingSystemException ex)
 		{
 			_logger.LogDebug(ex.Message);
+			context.Response.Outcome.AddIssue(VonkOutcome.IssueSeverity.Error, VonkOutcome.IssueType.NotFound, "", ex.Message);
 			context.Response.HttpResult = StatusCodes.Status404NotFound;
 			return;
 		}

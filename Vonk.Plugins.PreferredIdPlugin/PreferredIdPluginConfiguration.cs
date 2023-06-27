@@ -14,6 +14,7 @@ public static class PreferredIdPluginConfiguration
 {
 	public static IServiceCollection AddPreferredIdPlugin(this IServiceCollection services)
 	{
+		services.TryAddTransient<PreferredIdPluginRequestValidator>();
 		services.TryAddSingleton<PreferredIdPlugin>();
 		services.TryAddContextAware<ICapabilityStatementContributor, PreferredIdPluginCapabilityStatementContributor>(ServiceLifetime.Transient);
 		return services;
@@ -21,6 +22,14 @@ public static class PreferredIdPluginConfiguration
 
 	public static IApplicationBuilder AddPreferredIdPlugin(this IApplicationBuilder app)
 	{
+		app.OnCustomInteraction(Core.Context.VonkInteraction.type_custom, "preferred-id")
+			.AndResourceTypes("NamingSystem")
+			.AndMethod("GET")
+			.AndInformationModel(VonkConstants.Model.FhirR4)
+			.PreHandleWith<PreferredIdPluginRequestValidator>(
+				(svc, ctx) => svc.ValidateRequest(ctx)
+			);
+
 		app.OnCustomInteraction(Core.Context.VonkInteraction.type_custom, "preferred-id")
 			.AndResourceTypes("NamingSystem")
 			.AndMethod("GET")
