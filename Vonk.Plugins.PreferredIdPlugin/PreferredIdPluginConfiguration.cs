@@ -27,7 +27,15 @@ public static class PreferredIdPluginConfiguration
 			.AndMethod("GET")
 			.AndInformationModel(VonkConstants.Model.FhirR4)
 			.PreHandleWith<PreferredIdPluginRequestValidator>(
-				(svc, ctx) => svc.ValidateRequest(ctx)
+				(svc, ctx) => svc.ValidateGetRequest(ctx)
+			);
+
+		app.OnCustomInteraction(Core.Context.VonkInteraction.type_custom, "preferred-id")
+			.AndResourceTypes("NamingSystem")
+			.AndMethod("POST")
+			.AndInformationModel(VonkConstants.Model.FhirR4)
+			.PreHandleWith<PreferredIdPluginRequestValidator>(
+				(svc, ctx) => svc.ValidatePostRequest(ctx)
 			);
 
 		app.OnCustomInteraction(Core.Context.VonkInteraction.type_custom, "preferred-id")
@@ -37,6 +45,15 @@ public static class PreferredIdPluginConfiguration
 			.HandleAsyncWith<PreferredIdPlugin>(
 				(svc, ctx) => svc.ResolvePreferredId(ctx)
 			);
+
+		app.OnCustomInteraction(Core.Context.VonkInteraction.type_custom, "preferred-id")
+			.AndResourceTypes("NamingSystem")
+			.AndMethod("POST")
+			.AndInformationModel(VonkConstants.Model.FhirR4)
+			.HandleAsyncWith<PreferredIdPlugin>(
+				(svc, ctx) => svc.ResolvePreferredId(ctx)
+			);
+
 
 		return app;
 	}

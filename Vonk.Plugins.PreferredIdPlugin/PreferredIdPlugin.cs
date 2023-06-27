@@ -16,7 +16,7 @@ using static Hl7.Fhir.Model.NamingSystem;
 
 namespace Vonk.Plugins.PreferredIdPlugin;
 
-internal class PreferredIdPlugin
+public class PreferredIdPlugin
 {
 	private readonly IAdministrationSearchRepository _administrationSearchRepository;
 	private readonly ILogger<PreferredIdPlugin> _logger;
