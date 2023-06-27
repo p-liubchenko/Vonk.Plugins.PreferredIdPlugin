@@ -14,9 +14,9 @@ namespace Vonk.Plugins.PreferredIdPlugin.Extensions;
 internal static class AdministrationSearchRepositoryExtensions
 {
 
-	public static async Task<NamingSystem> FindNamingSystemByUniqueId(this IAdministrationSearchRepository repo, string uuid, string currentUrl)
+	public static async Task<NamingSystem> FindNamingSystemByUniqueId(this IAdministrationSearchRepository repo, string uuid, Uri currentUrl)
 	{
-		var options = new SearchOptions(VonkInteraction.type_custom, new Uri(currentUrl));
+		var options = new SearchOptions(VonkInteraction.type_custom, currentUrl);
 		var result = (await repo
 			.Search(new ArgumentCollection()
 				.AddArgument(

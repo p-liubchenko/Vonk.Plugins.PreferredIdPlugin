@@ -43,7 +43,7 @@ public class PreferredIdPlugin
 
 		try
 		{
-			uid = await FindUidOfType($"{context.HttpContext().Request.Scheme}://{context.HttpContext().Request.Host}", ResolveParameters(context));
+			uid = await FindUidOfType(context.ServerBase, ResolveParameters(context));
 
 			context.Arguments.Handled();
 
@@ -65,7 +65,7 @@ public class PreferredIdPlugin
 		_logger.LogDebug("preferred-id get ended");
 	}
 
-	private async Task<UniqueIdComponent> FindUidOfType(string serverUrl, (string id, string type) param)
+	private async Task<UniqueIdComponent> FindUidOfType(Uri serverUrl, (string id, string type) param)
 	{
 		var namingSystem = await _administrationSearchRepository.FindNamingSystemByUniqueId(param.id, serverUrl);
 
