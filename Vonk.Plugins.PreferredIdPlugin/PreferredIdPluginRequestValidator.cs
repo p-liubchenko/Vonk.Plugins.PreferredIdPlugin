@@ -3,8 +3,6 @@ using Hl7.Fhir.Model;
 
 using Microsoft.AspNetCore.Http;
 
-using System.Linq;
-
 using Vonk.Core.Context;
 using Vonk.Core.Support;
 
@@ -36,15 +34,11 @@ public class PreferredIdPluginRequestValidator
 			context.Response.Outcome.AddIssue(VonkOutcome.IssueSeverity.Error, VonkOutcome.IssueType.Value, "", "Id parameter is requiered");
 			context.Response.HttpResult = StatusCodes.Status400BadRequest;
 		}
-		else
-			context.Arguments.AddArgument(new Argument(ArgumentSource.Query, "id", body.Parameter.First(x => x.Name == "id").Value.ToString()));
 
 		if (!body.Parameter.HasAny(x => x.Name == "type"))
 		{
 			context.Response.Outcome.AddIssue(VonkOutcome.IssueSeverity.Error, VonkOutcome.IssueType.Value, "", "Type parameter not found");
 			context.Response.HttpResult = StatusCodes.Status400BadRequest;
 		}
-		else
-			context.Arguments.AddArgument(new Argument(ArgumentSource.Query, "type", body.Parameter.First(x => x.Name == "type").Value.ToString()));
 	}
 }
