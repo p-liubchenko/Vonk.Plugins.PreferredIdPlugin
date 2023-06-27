@@ -54,7 +54,6 @@ public static class PreferredIdPluginConfiguration
 				(svc, ctx) => svc.ResolvePreferredId(ctx)
 			);
 
-
 		return app;
 	}
 }

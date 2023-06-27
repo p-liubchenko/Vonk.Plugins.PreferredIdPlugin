@@ -2,6 +2,7 @@
 using Hl7.Fhir.Model;
 
 using Vonk.Core.Common;
+using Vonk.Fhir.R4;
 
 using static Hl7.Fhir.Model.NamingSystem;
 

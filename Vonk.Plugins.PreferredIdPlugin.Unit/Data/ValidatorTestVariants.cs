@@ -26,8 +26,6 @@ internal class ValidatorTestVariants : IEnumerable<object[]>
 				x.Arguments)
 			.Returns(new ArgumentCollection().AddArgument(new Argument(ArgumentSource.Query, "id", "any", ArgumentStatus.NotHandled))
 					.AddArgument(new Argument(ArgumentSource.Query, "type", "any", ArgumentStatus.NotHandled)));
-
-		//withTypeOnly.Setup(x => x.Response).Returns();
 	}
 
 	public IEnumerator<object[]> GetEnumerator()

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Vonk.Core.Context;
 using Vonk.Core.Repository;
@@ -42,16 +43,12 @@ public class PreferredIdPlugin
 
 		try
 		{
-			var param = ResolveParameters(context);
-			var pocos = await _administrationSearchRepository.FindNamingSystemByUniqueId(param.id, $"{context.HttpContext().Request.Scheme}://{context.HttpContext().Request.Host}");
-
-			uid = GetRequieredUidByType(pocos, param.type.ToLower());
+			uid = await FindUidOfType($"{context.HttpContext().Request.Scheme}://{context.HttpContext().Request.Host}", ResolveParameters(context));
 
 			context.Arguments.Handled();
 
 			context.Response.Payload = uid.ToParameters();
 			context.Response.HttpResult = StatusCodes.Status200OK;
-
 		}
 		catch (NamingSystemException ex)
 		{
@@ -66,6 +63,18 @@ public class PreferredIdPlugin
 		}
 
 		_logger.LogDebug("preferred-id get ended");
+	}
+
+	private async Task<UniqueIdComponent> FindUidOfType(string serverUrl, (string id, string type) param)
+	{
+		var namingSystem = await _administrationSearchRepository.FindNamingSystemByUniqueId(param.id, serverUrl);
+
+		var result = namingSystem.UniqueId.FirstOrDefault(u => u.Type.HasValue && u.Type.ToString().ToLower() == param.type.ToLower());
+
+		if (result is null)
+			throw new NamingSystemException($"UniqueId of requiered type was not fount in {param.id}");
+
+		return result;
 	}
 
 	public static (string id, string type) ResolveParameters(IVonkContext context)
@@ -91,15 +100,5 @@ public class PreferredIdPlugin
 		}
 
 		throw new InvalidOperationException("Unsupported HTTP method");
-	}
-
-	private static UniqueIdComponent GetRequieredUidByType(NamingSystem pocos, string type)
-	{
-		var result = pocos.UniqueId.FirstOrDefault(u => u.Type.HasValue && u.Type.ToString().ToLower() == type);
-
-		if (result is null)
-			throw new NamingSystemException($"UniqueId of requiered type was not fount in {pocos.Id}");
-
-		return result;
 	}
 }
