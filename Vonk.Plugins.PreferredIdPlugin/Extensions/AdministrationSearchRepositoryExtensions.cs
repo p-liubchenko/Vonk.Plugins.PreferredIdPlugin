@@ -16,7 +16,7 @@ internal static class AdministrationSearchRepositoryExtensions
 
 	public static async Task<NamingSystem> FindNamingSystemByUniqueId(this IAdministrationSearchRepository repo, string uuid, Uri currentUrl)
 	{
-		var options = new SearchOptions(VonkInteraction.type_custom, currentUrl);
+		var options = SearchOptions.Latest(currentUrl, VonkInteraction.type_custom);
 		var result = (await repo
 			.Search(new ArgumentCollection()
 				.AddArgument(
