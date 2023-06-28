@@ -7,7 +7,7 @@ using Vonk.Core.Context;
 using Vonk.Core.Support;
 
 namespace Vonk.Plugins.PreferredIdPlugin;
-public class PreferredIdPluginRequestValidator
+public sealed class PreferredIdPluginRequestValidator
 {
 
 	public void ValidateGetRequest(IVonkContext context)

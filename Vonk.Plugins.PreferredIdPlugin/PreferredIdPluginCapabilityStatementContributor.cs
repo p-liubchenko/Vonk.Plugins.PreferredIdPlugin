@@ -10,7 +10,7 @@ using Vonk.Core.Support;
 namespace Vonk.Plugins.PreferredIdPlugin;
 
 [ContextAware(InformationModels = new[] { VonkConstants.Model.FhirR4 })]
-public class PreferredIdPluginCapabilityStatementContributor : ICapabilityStatementContributor
+public sealed class PreferredIdPluginCapabilityStatementContributor : ICapabilityStatementContributor
 {
 
 	private const string _operationName = "preferred-id";

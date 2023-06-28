@@ -19,7 +19,7 @@ using static Hl7.Fhir.Model.NamingSystem;
 
 namespace Vonk.Plugins.PreferredIdPlugin;
 
-public class PreferredIdPlugin
+public sealed class PreferredIdPlugin
 {
 	private readonly AdminDomainResourceSearchRepository<NamingSystem> _namingSystemRepository;
 	private readonly ILogger<PreferredIdPlugin> _logger;
