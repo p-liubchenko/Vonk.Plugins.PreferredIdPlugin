@@ -52,7 +52,7 @@ public sealed class PreferredIdPlugin
 
 			context.Response.HttpResult = StatusCodes.Status200OK;
 		}
-		catch (NamingSystemException ex)
+		catch (Exception ex) when (ex is DomainResourceSearchException || ex is NamingSystemException)
 		{
 			_logger.LogDebug(ex.Message);
 			context.Response.Outcome.AddIssue(VonkOutcome.IssueSeverity.Error, VonkOutcome.IssueType.NotFound, "", ex.Message);

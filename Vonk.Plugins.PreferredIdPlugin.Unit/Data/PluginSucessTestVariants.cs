@@ -40,7 +40,6 @@ internal class PluginSucessTestVariants : IEnumerable<object[]>
 	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
 
-
 internal class PluginNotFoundTestVariants : IEnumerable<object[]>
 {
 	VonkTestContext postRequestNotFound = new();

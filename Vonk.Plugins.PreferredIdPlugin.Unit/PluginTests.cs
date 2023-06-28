@@ -53,22 +53,54 @@ public sealed class PluginTests
 		}
 	};
 
+	private static readonly List<NamingSystem> _predefinedWithOnlyOneUniqueId = new List<NamingSystem>()
+	{
+		new NamingSystem()
+		{
+			UniqueId = new List<NamingSystem.UniqueIdComponent>()
+			{
+				new NamingSystem.UniqueIdComponent()
+				{
+					Value = "http://hl7.org/fhir/sid/us-ssn",
+					Type = NamingSystem.NamingSystemIdentifierType.Uri
+				}
+			}
+		},
+		new NamingSystem()
+		{
+			UniqueId = new List<NamingSystem.UniqueIdComponent>()
+			{
+				new NamingSystem.UniqueIdComponent()
+				{
+					Value = "http://hl7.org/fhir/administrative-gender",
+					Type = NamingSystem.NamingSystemIdentifierType.Uri
+				}
+			}
+		}
+	};
+
 	public PluginTests()
 	{
-		searchRepository
-			.Setup(x =>
-				x.Search(It.IsAny<IArgumentCollection>(), It.IsAny<SearchOptions>()))
-			.ReturnsAsync(new SearchResult(_predefined.Select(p => p.ToIResource()), 10));
+
 	}
 
 	[Theory]
 	[ClassData(typeof(PluginSucessTestVariants))]
 	public async System.Threading.Tasks.Task TestContextModifications_200(IVonkContext context, int statusCode, IResource expectedResult)
 	{
+		//setup
+		searchRepository
+			.Setup(x =>
+				x.Search(It.IsAny<IArgumentCollection>(), It.IsAny<SearchOptions>()))
+			.ReturnsAsync(new SearchResult(_predefined.Select(p => p.ToIResource()), 10));
+
 		AdminDomainResourceSearchRepository<NamingSystem> adrsr = new AdminDomainResourceSearchRepository<NamingSystem>(searchRepository.Object);
 		PreferredIdPlugin p = new PreferredIdPlugin(adrsr, Mock.Of<ILogger<PreferredIdPlugin>>());
 
+		// execute
 		await p.ResolvePreferredId(context);
+
+		//verify
 		Assert.Equal("Parameters", context.Response.Payload.Type);
 		Assert.NotNull(context.Response.Payload);
 		Assert.Equal(statusCode, context.Response.HttpResult);
@@ -80,13 +112,57 @@ public sealed class PluginTests
 	[ClassData(typeof(PluginNotFoundTestVariants))]
 	public async System.Threading.Tasks.Task TestContextModifications_OnError(IVonkContext context, int statusCode)
 	{
+		//setup
 		AdminDomainResourceSearchRepository<NamingSystem> adrsr = new AdminDomainResourceSearchRepository<NamingSystem>(searchRepository.Object);
 		PreferredIdPlugin p = new PreferredIdPlugin(adrsr, Mock.Of<ILogger<PreferredIdPlugin>>());
 
+		//execute
 		await p.ResolvePreferredId(context);
 
+		//verify
 		Assert.Null(context.Response.Payload);
 		Assert.Equal(statusCode, context.Response.HttpResult);
+	}
 
+	[Theory]
+	[ClassData(typeof(PluginNotFoundTestVariants))]
+	public async System.Threading.Tasks.Task TestContextModifications_NotFoundOnRepositoryError(IVonkContext context, int statusCode)
+	{
+		//setup
+		searchRepository
+			.Setup(x =>
+				x.Search(It.IsAny<IArgumentCollection>(), It.IsAny<SearchOptions>()))
+			.ReturnsAsync(new SearchResult(Enumerable.Empty<IResource>(), 0));
+
+		AdminDomainResourceSearchRepository<NamingSystem> adrsr = new AdminDomainResourceSearchRepository<NamingSystem>(searchRepository.Object);
+		PreferredIdPlugin p = new PreferredIdPlugin(adrsr, Mock.Of<ILogger<PreferredIdPlugin>>());
+
+		//execute
+		await p.ResolvePreferredId(context);
+
+		//verify
+		Assert.Null(context.Response.Payload);
+		Assert.Equal(statusCode, context.Response.HttpResult);
+	}
+
+	[Theory]
+	[ClassData(typeof(PluginNotFoundTestVariants))]
+	public async System.Threading.Tasks.Task TestContextModifications_NotFoundRequestedUniqueIdError(IVonkContext context, int statusCode)
+	{
+		//setup
+		searchRepository
+			.Setup(x =>
+				x.Search(It.IsAny<IArgumentCollection>(), It.IsAny<SearchOptions>()))
+			.ReturnsAsync(new SearchResult(_predefinedWithOnlyOneUniqueId.Select(x => x.ToIResource()), 0));
+
+		AdminDomainResourceSearchRepository<NamingSystem> adrsr = new AdminDomainResourceSearchRepository<NamingSystem>(searchRepository.Object);
+		PreferredIdPlugin p = new PreferredIdPlugin(adrsr, Mock.Of<ILogger<PreferredIdPlugin>>());
+
+		//execute
+		await p.ResolvePreferredId(context);
+
+		//verify
+		Assert.Null(context.Response.Payload);
+		Assert.Equal(statusCode, context.Response.HttpResult);
 	}
 }
