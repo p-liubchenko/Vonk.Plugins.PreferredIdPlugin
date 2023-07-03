@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Vonk.Core.Common;
 using Vonk.Core.Context;
 using Vonk.Fhir.R4;
 using Vonk.Plugins.PreferredIdPlugin.Exceptions;
@@ -42,21 +43,16 @@ public sealed class PreferredIdPlugin
 		try
 		{
 			UniqueIdComponent uid = await FindUidOfType(context.ServerBase, ResolveParameters(context));
-
-			context.Arguments.Handled();
-
-			context.Response.Payload = new Parameters()
+			Ok(context, new Parameters()
 			{
 				{ "result", new FhirString(uid.Value) }
-			}.ToIResource();
+			}.ToIResource());
 
-			context.Response.HttpResult = StatusCodes.Status200OK;
 		}
 		catch (Exception ex) when (ex is DomainResourceSearchException || ex is NamingSystemException)
 		{
 			_logger.LogDebug(ex.Message);
-			context.Response.Outcome.AddIssue(VonkOutcome.IssueSeverity.Error, VonkOutcome.IssueType.NotFound, "", ex.Message);
-			context.Response.HttpResult = StatusCodes.Status404NotFound;
+			NotFound(context, ex.Message);
 			return;
 		}
 		catch (InvalidOperationException)
@@ -65,6 +61,20 @@ public sealed class PreferredIdPlugin
 		}
 
 		_logger.LogDebug("preferred-id get ended");
+	}
+
+	private static void Ok(IVonkContext context, IResource parameters)
+	{
+		context.Arguments.Handled();
+		context.Response.Payload = parameters;
+		context.Response.HttpResult = StatusCodes.Status200OK;
+	}
+
+	private static void NotFound(IVonkContext context, string? message = null)
+	{
+		if (!string.IsNullOrWhiteSpace(message))
+			context.Response.Outcome.AddIssue(VonkOutcome.IssueSeverity.Error, VonkOutcome.IssueType.NotFound, "", message);
+		context.Response.HttpResult = StatusCodes.Status404NotFound;
 	}
 
 	/// <summary>
@@ -94,7 +104,7 @@ public sealed class PreferredIdPlugin
 	/// <param name="context"></param>
 	/// <returns></returns>
 	/// <exception cref="InvalidOperationException"></exception>
-	public static (string id, string type) ResolveParameters(IVonkContext context)
+	private static (string id, string type) ResolveParameters(IVonkContext context)
 	{
 		if (context.Request.Method == HttpMethods.Get)
 			return new()

@@ -15,84 +15,16 @@ using Vonk.Plugins.PreferredIdPlugin.Unit.Data;
 namespace Vonk.Plugins.PreferredIdPlugin.Unit;
 public sealed class PluginTests
 {
-	private Mock<IAdministrationSearchRepository> searchRepository = new Mock<IAdministrationSearchRepository>();
-
-	private static readonly List<NamingSystem> _predefined = new List<NamingSystem>()
-	{
-		new NamingSystem()
-		{
-			UniqueId = new List<NamingSystem.UniqueIdComponent>()
-			{
-				new NamingSystem.UniqueIdComponent()
-				{
-					Value = "2.16.840.1.113883.4.1",
-					Type = NamingSystem.NamingSystemIdentifierType.Oid
-				},
-				new NamingSystem.UniqueIdComponent()
-				{
-					Value = "http://hl7.org/fhir/sid/us-ssn",
-					Type = NamingSystem.NamingSystemIdentifierType.Uri
-				}
-			}
-		},
-		new NamingSystem()
-		{
-			UniqueId = new List<NamingSystem.UniqueIdComponent>()
-			{
-				new NamingSystem.UniqueIdComponent()
-				{
-					Value = "2.16.840.1.113883.4.642.4.2",
-					Type = NamingSystem.NamingSystemIdentifierType.Oid
-				},
-				new NamingSystem.UniqueIdComponent()
-				{
-					Value = "http://hl7.org/fhir/administrative-gender",
-					Type = NamingSystem.NamingSystemIdentifierType.Uri
-				}
-			}
-		}
-	};
-
-	private static readonly List<NamingSystem> _predefinedWithOnlyOneUniqueId = new List<NamingSystem>()
-	{
-		new NamingSystem()
-		{
-			UniqueId = new List<NamingSystem.UniqueIdComponent>()
-			{
-				new NamingSystem.UniqueIdComponent()
-				{
-					Value = "http://hl7.org/fhir/sid/us-ssn",
-					Type = NamingSystem.NamingSystemIdentifierType.Uri
-				}
-			}
-		},
-		new NamingSystem()
-		{
-			UniqueId = new List<NamingSystem.UniqueIdComponent>()
-			{
-				new NamingSystem.UniqueIdComponent()
-				{
-					Value = "http://hl7.org/fhir/administrative-gender",
-					Type = NamingSystem.NamingSystemIdentifierType.Uri
-				}
-			}
-		}
-	};
-
-	public PluginTests()
-	{
-
-	}
-
 	[Theory]
 	[ClassData(typeof(PluginSucessTestVariants))]
-	public async System.Threading.Tasks.Task TestContextModifications_200(IVonkContext context, int statusCode, IResource expectedResult)
+	public async System.Threading.Tasks.Task TestContextModifications_200(IVonkContext context, int statusCode, IResource expectedResult, IEnumerable<NamingSystem> dataSet)
 	{
 		//setup
+		Mock<IAdministrationSearchRepository> searchRepository = new Mock<IAdministrationSearchRepository>();
 		searchRepository
-			.Setup(x =>
-				x.Search(It.IsAny<IArgumentCollection>(), It.IsAny<SearchOptions>()))
-			.ReturnsAsync(new SearchResult(_predefined.Select(p => p.ToIResource()), 10));
+				.Setup(x =>
+					x.Search(It.IsAny<IArgumentCollection>(), It.IsAny<SearchOptions>()))
+				.ReturnsAsync(new SearchResult(dataSet.Select(p => p.ToIResource()), 10));
 
 		AdminDomainResourceSearchRepository<NamingSystem> adrsr = new AdminDomainResourceSearchRepository<NamingSystem>(searchRepository.Object);
 		PreferredIdPlugin p = new PreferredIdPlugin(adrsr, Mock.Of<ILogger<PreferredIdPlugin>>());
@@ -110,9 +42,10 @@ public sealed class PluginTests
 
 	[Theory]
 	[ClassData(typeof(PluginNotFoundTestVariants))]
-	public async System.Threading.Tasks.Task TestContextModifications_OnError(IVonkContext context, int statusCode)
+	public async System.Threading.Tasks.Task TestContextModifications_OnError(IVonkContext context, int statusCode, IEnumerable<NamingSystem> dataSet)
 	{
 		//setup
+		Mock<IAdministrationSearchRepository> searchRepository = new Mock<IAdministrationSearchRepository>();
 		AdminDomainResourceSearchRepository<NamingSystem> adrsr = new AdminDomainResourceSearchRepository<NamingSystem>(searchRepository.Object);
 		PreferredIdPlugin p = new PreferredIdPlugin(adrsr, Mock.Of<ILogger<PreferredIdPlugin>>());
 
@@ -126,13 +59,14 @@ public sealed class PluginTests
 
 	[Theory]
 	[ClassData(typeof(PluginNotFoundTestVariants))]
-	public async System.Threading.Tasks.Task TestContextModifications_NotFoundOnRepositoryError(IVonkContext context, int statusCode)
+	public async System.Threading.Tasks.Task TestContextModifications_NotFoundOnRepositoryError(IVonkContext context, int statusCode, IEnumerable<NamingSystem> dataSet)
 	{
 		//setup
+		Mock<IAdministrationSearchRepository> searchRepository = new Mock<IAdministrationSearchRepository>();
 		searchRepository
-			.Setup(x =>
-				x.Search(It.IsAny<IArgumentCollection>(), It.IsAny<SearchOptions>()))
-			.ReturnsAsync(new SearchResult(Enumerable.Empty<IResource>(), 0));
+				.Setup(x =>
+					x.Search(It.IsAny<IArgumentCollection>(), It.IsAny<SearchOptions>()))
+				.ReturnsAsync(new SearchResult(Enumerable.Empty<IResource>(), 0));
 
 		AdminDomainResourceSearchRepository<NamingSystem> adrsr = new AdminDomainResourceSearchRepository<NamingSystem>(searchRepository.Object);
 		PreferredIdPlugin p = new PreferredIdPlugin(adrsr, Mock.Of<ILogger<PreferredIdPlugin>>());
@@ -147,13 +81,14 @@ public sealed class PluginTests
 
 	[Theory]
 	[ClassData(typeof(PluginNotFoundTestVariants))]
-	public async System.Threading.Tasks.Task TestContextModifications_NotFoundRequestedUniqueIdError(IVonkContext context, int statusCode)
+	public async System.Threading.Tasks.Task TestContextModifications_NotFoundRequestedUniqueIdError(IVonkContext context, int statusCode, IEnumerable<NamingSystem> dataSet)
 	{
 		//setup
+		Mock<IAdministrationSearchRepository> searchRepository = new Mock<IAdministrationSearchRepository>();
 		searchRepository
 			.Setup(x =>
 				x.Search(It.IsAny<IArgumentCollection>(), It.IsAny<SearchOptions>()))
-			.ReturnsAsync(new SearchResult(_predefinedWithOnlyOneUniqueId.Select(x => x.ToIResource()), 0));
+			.ReturnsAsync(new SearchResult(dataSet.Select(x => x.ToIResource()), 0));
 
 		AdminDomainResourceSearchRepository<NamingSystem> adrsr = new AdminDomainResourceSearchRepository<NamingSystem>(searchRepository.Object);
 		PreferredIdPlugin p = new PreferredIdPlugin(adrsr, Mock.Of<ILogger<PreferredIdPlugin>>());
